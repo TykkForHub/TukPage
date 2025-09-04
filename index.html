@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tuk's World</title>
+  <link rel="icon" href="title.avif" />
+
+  <style>
+    @font-face {
+      font-family: 'Minecraft';
+      src: url('Minecraft.ttf') format('truetype');
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Minecraft', Arial, sans-serif;
+      color: white;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      transition: background-image 1s ease-in-out;
+      scrollbar-width: thin;
+      scrollbar-color: #0a2942 #0a2942;
+    }
+
+    body {
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a2942;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #0a2942;
+    }
+
+    .fade-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      z-index: 9999;
+      animation: fadeOut 1.5s ease forwards;
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    .tab-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: rgba(17, 26, 32, 0.8);
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 4px rgba(10, 16, 20, 0.8);
+      z-index: 1000;
+    }
+
+    .tab-buttons-left,
+    .tab-buttons-right {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .tab-button {
+      background: none;
+      font-family: 'Minecraft', Arial, sans-serif;
+      color: white;
+      border: none;
+      padding: 0.5rem 0;
+      font-size: 1rem;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .tab-button::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0%;
+      height: 2px;
+      background-color: white;
+      transition: width 0.3s ease;
+    }
+
+    .tab-button:hover::after {
+      width: 100%;
+    }
+
+    .icon-button {
+      width: 32px;
+      height: 32px;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .icon-button:hover {
+      transform: scale(1.2);
+    }
+
+    .icon-button img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .center-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      padding-top: 80px;
+      z-index: 1;
+    }
+
+    .imagetitle {
+      font-size: 2rem;
+      opacity: 0;
+      animation: fadeUpIn 3.5s ease-out forwards;
+      font-weight: 500;
+    }
+
+    .welcome {
+      font-size: 2rem;
+      opacity: 0;
+      animation: fadeUpIn 3.5s ease-out forwards;
+      animation-delay: 1s;
+      font-weight: 500;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      opacity: 0;
+      animation: fadeUpIn 3.5s ease-out forwards;
+      animation-delay: 1.5s;
+      font-weight: 500;
+    }
+
+    @keyframes fadeUpIn {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .bottom-section {
+      position: relative;
+      min-height: 100vh;
+      padding: 12rem 2rem 14rem 2rem;
+      text-align: center;
+      font-weight: 600;
+      color: #eee;
+      background: linear-gradient(135deg, #042f6f, #1e4d8f, #3067c9, #1e4d8f, #042f6f);
+      background-size: 1000% 1000%;
+      animation: gradientShift 30s ease infinite;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      transition: box-shadow 0.3s ease;
+      overflow: hidden;
+    }
+
+    .bottom-section:hover {
+      box-shadow: 0 0 12px 4px rgba(33, 150, 243, 0.6), 0 0 30px 10px rgba(33, 150, 243, 0.4);
+    }
+
+    .bottom-section::before {
+      content: '';
+      position: absolute;
+      top: var(--cursor-y, 50%);
+      left: var(--cursor-x, 50%);
+      transform: translate(-50%, -50%);
+      width: 150px;
+      height: 150px;
+      pointer-events: none;
+      border-radius: 50%;
+      filter: drop-shadow(0 0 6px rgba(33, 150, 243, 0.6));
+      mix-blend-mode: screen;
+      transition: top 0.1s ease, left 0.1s ease;
+      z-index: 2;
+    }
+
+    .bottom-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .bottom-section h2 {
+      display: none;
+    }
+
+    .updates-title-img {
+      display: block;
+      margin: 0 auto 2rem auto;
+      width: 1500px;
+      height: auto;
+      opacity: 0;
+      animation: slideInFromLeft 1s ease forwards;
+    }
+
+    .updates-bottom-right-img {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 250px;
+      height: auto;
+      opacity: 0;
+      animation: slideInFromRight 1s ease forwards;
+      animation-delay: 1s;
+    }
+
+
+
+    .updates-text,
+    .updates-description {
+      font-family: 'Minecraft', Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto 1rem auto;
+      text-align: center;
+      opacity: 0.7;
+      transform: translateY(40px);
+      transition: opacity 15s ease, transform 15s ease;
+      background: linear-gradient(270deg, #082947, #1e629f, #3d94dd, #1e629f, #082947);
+      background-size: 1000% 1000%;
+      animation: gradientShift 30s ease infinite;
+      border: 8px solid transparent;
+      border-image: url('pixel-border.jpg') 8 repeat;
+      border-radius: 0;
+      padding: 1rem 2rem;
+      box-shadow: none;
+      position: relative;
+      z-index: 3;
+      color: #eee;
+      user-select: text;
+    }
+
+    .updates-text {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .updates-description {
+      font-size: 1.5rem;
+      color: #ddd;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .updates-text.visible,
+    .updates-description.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    @keyframes slideInFromLeft {
+      0% {
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideInFromRight {
+      0% {
+        opacity: 0;
+        transform: translateX(50px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .nav-button {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.4);
+      border: none;
+      color: white;
+      font-size: 2rem;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .nav-left {
+      left: 20px;
+    }
+    .nav-right {
+      right: 20px;
+    }
+
+    .nav-button:hover {
+      opacity: 1 !important;
+    }
+
+    .hover-zone-left,
+    .hover-zone-right {
+      position: fixed;
+      top: 0;
+      width: 100px;
+      height: 100vh;
+      z-index: 998;
+    }
+
+    .hover-zone-left {
+      left: 0;
+    }
+    .hover-zone-right {
+      right: 0;
+    }
+
+    @keyframes textFadeToRed {
+      0%,
+      100% {
+        color: white;
+      }
+      50% {
+        color: red;
+      }
+    }
+
+    @keyframes shake {
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+      25% {
+        transform: translateX(-5px);
+      }
+      75% {
+        transform: translateX(5px);
+      }
+    }
+
+    .fade-shake-button {
+      animation: textFadeToRed 0.6s ease forwards, shake 0.6s ease forwards;
+    }
+
+    .contact-box,
+    .home-box,
+    .store-box {
+      position: fixed;
+      right: 50px;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 1rem;
+      border-radius: 10px;
+      max-width: 300px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 1001;
+      pointer-events: none;
+    }
+
+    .contact-box.visible,
+    .home-box.visible,
+    .store-box.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+        .music-toggle {
+      position: fixed;
+      top: 70px;
+      left: 2rem;
+      z-index: 1001;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+    }
+
+    .music-toggle img {
+      width: 100%;
+      height: 100%;
+    }
+    #latest-video-container {
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 8px solid transparent;
+  border-image: url('pixel-border.jpg') 8 repeat;
+  padding: 10px;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+  </style>
+</head>
+<body>
+  <div class="fade-overlay"></div>
+  <div class="tab-bar">
+    <div class="tab-buttons-left">
+      <button class="tab-button" id="homeBtn">Home</button>
+      <button class="tab-button" onclick="scrollToupdates()">Updates</button>
+      <button class="tab-button" id="contactBtn">Contact</button>
+      <button class="tab-button" id="storeBtn">Store</button>
+    </div>
+    <div class="tab-buttons-right">
+      <button class="icon-button" onclick="location.href='https://www.youtube.com/@Tuk4Tuk/?subconfirmation=1'"><img src="icon1.avif" alt="Icon 1" /></button>
+      <button class="icon-button" onclick="location.href='https://discord.gg/NcJxyPbmJT'"><img src="icon2.avif" alt="Icon 2" /></button>
+      <button class="icon-button" onclick="location.href='https://solo.to/tykk'"><img src="icon3.avif" alt="Icon 3" /></button>
+    </div>
+  </div>
+  <div class="contact-box" id="contactBox">
+    <p>Currently, no contact information is available — no email, phone number, or details provided.</p>
+  </div>
+  <div class="home-box" id="homeBox">
+    <p>You're already on the Home page!</p>
+  </div>
+  <div class="store-box" id="storeBox">
+    <p>Store isn't ready yet!</p>
+  </div>
+
+  <div class="hover-zone-left" onmouseenter="showArrow('left')" onmouseleave="hideArrow('left')"></div>
+  <div class="hover-zone-right" onmouseenter="showArrow('right')" onmouseleave="hideArrow('right')"></div>
+  <button class="nav-button nav-left" id="leftArrow" onclick="prevBackground()"><</button>
+  <button class="nav-button nav-right" id="rightArrow" onclick="nextBackground()">></button>
+  <div class="center-text">
+    <div class="imagetitle"><img src="TukPage.avif" alt="Tuk Title Image" /></div>
+    <div class="welcome">Welcome!</div>
+    <div class="subtitle">Glad to see you here!</div>
+  </div>
+<div class="bottom-section" id="updates-section">
+  <img class="updates-title-img" src="beesigma.avif" alt="updates TukTuk Image" />
+  <div class="updates-text">Updates!</div>
+  <div class="updates-description">
+    <p>Keep Up On what's happening!</p>
+    <div id="latest-video-container">
+  <iframe
+    id="latestVideo"
+    width="800"
+    height="450"
+    frameborder="0"
+    allowfullscreen
+  ></iframe>
+</div>
+  </div>
+
+<div id="youtubeEmbeds" style="position: relative; z-index: 3;">
+  <div id="longVideoEmbed" style="text-align: center; margin-top: 5rem;"></div>
+</div>
+
+  <img class="about-bottom-right-img" src="bottomright.avif" alt="Bottom Right Decoration" />
+</div>
+  </div>
+    <button class="music-toggle" onclick="toggleMusic()">
+    <img id="musicIcon" src="pause-icon.avif" alt="Toggle Music" />
+  </button>
+  <audio id="bg-music" src="background.mp3"></audio>
+  <script>
+    const music = document.getElementById('bg-music');
+    const musicIcon = document.getElementById('musicIcon');
+
+    function toggleMusic() {
+      if (music.paused) {
+        music.play();
+        musicIcon.src = 'play-icon.avif';
+      } else {
+        music.pause();
+        musicIcon.src = 'pause-icon.avif';
+      }
+    };
+    const backgrounds = [
+      'background.jpg',
+      'background2.jpg',
+      'background3.jpg',
+      'background4.jpg',
+      'background5.jpg',
+      'background6.jpg',
+      'background7.jpg',
+      'background8.jpg',
+      'background9.jpg',
+      'background10.jpg'
+    ];
+    let currentBg = 0;
+    let bgTimer;
+
+    function updateBackground() {
+      document.body.style.backgroundImage = `url('${backgrounds[currentBg]}')`;
+    }
+
+    function resetTimer() {
+      clearInterval(bgTimer);
+      bgTimer = setInterval(nextBackground, 10000);
+    }
+
+    function nextBackground() {
+      currentBg = (currentBg + 1) % backgrounds.length;
+      updateBackground();
+      resetTimer();
+    }
+
+    function prevBackground() {
+      currentBg = (currentBg - 1 + backgrounds.length) % backgrounds.length;
+      updateBackground();
+      resetTimer();
+    }
+
+    function showArrow(side) {
+      document.getElementById(side === 'left' ? 'leftArrow' : 'rightArrow').style.opacity =
+        '1';
+    }
+
+    function hideArrow(side) {
+      document.getElementById(side === 'left' ? 'leftArrow' : 'rightArrow').style.opacity =
+        '0';
+    }
+
+    function scrollToupdates() {
+      document.getElementById('updates-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function toggleContactBox() {
+      const box = document.getElementById('contactBox');
+      box.classList.toggle('visible');
+      updateBoxesPosition();
+    }
+
+    function updateBoxesPosition() {
+      const boxes = [
+        document.getElementById('homeBox'),
+        document.getElementById('contactBox'),
+        document.getElementById('storeBox')
+      ];
+
+      let currentTop = 100;
+      const gap = 15;
+
+      boxes.forEach(box => {
+        if (box.classList.contains('visible')) {
+          box.style.top = currentTop + 'px';
+          currentTop += box.offsetHeight + gap;
+        } else {
+          box.style.top = '';
+        }
+      });
+    }
+
+    function showBoxTemporarily(boxId) {
+      const box = document.getElementById(boxId);
+      if (!box) return;
+
+      box.classList.add('visible');
+      updateBoxesPosition();
+
+      if (box.hideTimeout) clearTimeout(box.hideTimeout);
+      box.hideTimeout = setTimeout(() => {
+        box.classList.remove('visible');
+        updateBoxesPosition();
+      }, 5000);
+    }
+
+    document.getElementById('homeBtn').addEventListener('click', e => {
+      e.preventDefault();
+      const btn = e.currentTarget;
+      btn.classList.add('fade-shake-button');
+      setTimeout(() => {
+        btn.classList.remove('fade-shake-button');
+        showBoxTemporarily('homeBox');
+      }, 600);
+    });
+
+    document.getElementById('storeBtn').addEventListener('click', e => {
+      e.preventDefault();
+      const btn = e.currentTarget;
+      btn.classList.add('fade-shake-button');
+      setTimeout(() => {
+        btn.classList.remove('fade-shake-button');
+        showBoxTemporarily('storeBox');
+      }, 600);
+    });
+
+    document.getElementById('contactBtn').addEventListener('click', e => {
+      const btn = e.currentTarget;
+      btn.classList.add('fade-shake-button');
+      e.preventDefault();
+      toggleContactBox();
+    });
+
+    document.addEventListener('mousemove', e => {
+      const bottomSection = document.getElementById('about-section');
+      bottomSection.style.setProperty('--cursor-x', e.clientX + 'px');
+      bottomSection.style.setProperty('--cursor-y', e.clientY + 'px');
+    });
+
+    window.onload = () => {
+      updateBackground();
+      resetTimer();
+      setTimeout(() => {
+        const overlay = document.querySelector('.fade-overlay');
+        if (overlay) overlay.style.display = 'none';
+      }, 1500);
+    };
+  </script>
+</body>
+<script>
+const API_KEY = 'AIzaSyACFzoS96ojikKa8SuJC69X381b_pzAxM4';
+const CHANNEL_ID = 'UCLPEarhNcZlXVc6iqLUaqfQ';
+
+async function fetchLatestVideos() {
+  try {
+    const channelRes = await fetch(
+      `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${CHANNEL_ID}&key=${API_KEY}`
+    );
+    const channelData = await channelRes.json();
+    const uploadsPlaylistId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
+
+    const playlistRes = await fetch(
+      `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=5&playlistId=${uploadsPlaylistId}&key=${API_KEY}`
+    );
+    const playlistData = await playlistRes.json();
+
+    const longDiv = document.getElementById('longVideoEmbed');
+    const shortDiv = document.getElementById('shortVideoEmbed');
+
+    longDiv.innerHTML = '';
+    shortDiv.innerHTML = '';
+
+    let longVideoFound = false;
+    let shortVideoFound = false;
+
+    for (const item of playlistData.items) {
+      const videoId = item.snippet.resourceId.videoId;
+      const title = item.snippet.title.toLowerCase();
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+      iframe.allow =
+        'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.style.border = 'none';
+
+      if (!shortVideoFound && title.includes('short')) {
+        iframe.width = '300';
+        iframe.height = '170';
+        shortDiv.appendChild(iframe);
+        shortVideoFound = true;
+      } else if (!longVideoFound) {
+        iframe.width = '560';
+        iframe.height = '315';
+        longDiv.appendChild(iframe);
+        longVideoFound = true;
+      }
+
+      if (longVideoFound && shortVideoFound) break;
+    }
+  } catch (err) {
+    console.error('Failed to load YouTube videos:', err);
+  }
+}
+
+fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet&order=date&type=video&maxResults=1`)
+  .then(response => response.json())
+  .then(data => {
+    const videoId = data.items[0].id.videoId;
+    const iframe = document.getElementById('latestVideo');
+    iframe.src = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+  })
+  .catch(err => console.error('Failed to load latest video:', err));
+
+window.addEventListener('DOMContentLoaded', fetchLatestVideos);
+</script>
+</html>
